@@ -25,7 +25,7 @@ linksRouter.post('/', async (req, res, next) => {
         const newUrlLink = new LinkModel(postURL);
         await newUrlLink.save();
 
-        res.send(newUrlLink);
+        res.json(newUrlLink);
     } catch (e) {
         next(e);
     }
@@ -34,7 +34,7 @@ linksRouter.post('/', async (req, res, next) => {
 linksRouter.get('/:shortUrl', async (req, res, next) => {
     try {
         const resultShort =
-            await LinkModel .findOne({ shortUrl: req.params.shortUrl });
+            await LinkModel.findOne({ shortUrl: req.params.shortUrl });
 
         if (!resultShort) {
             res.status(404).send({ error: 'Value is not found!' });
