@@ -1,39 +1,55 @@
-import {Box, Button, CircularProgress, Grid, TextField, Typography} from '@mui/material';
+import {Box, Button, CircularProgress, Grid, Link, TextField, Typography} from '@mui/material';
 import ShortTextIcon from '@mui/icons-material/ShortText';
-import {useState} from 'react';
 import {useMutation} from '@tanstack/react-query';
-import {ShorURL} from '../../types';
 import axiosApi from '../../axiosApi.ts';
+import {useEffect, useState} from 'react';
+import {ShorURL} from '../../types';
+import {useNavigate} from 'react-router';
 
 const InputForm = () => {
   const [inputUrl, setInputUrl] = useState<string>('');
-  const [loading, isLoading] = useState(false);
+  const [shortUrl, setShortUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const linkMutation = useMutation({
-    mutationFn: async (links: ShorURL)  => {
-      isLoading(true);
+    mutationFn: async (links: ShorURL) => {
+      setLoading(true);
       try {
         const response = await axiosApi.post('/links', links);
-        return  response.data;
+        return response.data;
       } finally {
-        isLoading(false);
+        setLoading(false);
       }
     }
   });
 
   const handleClick = async () => {
-    const result = await linkMutation.mutateAsync({
-      originalUrl: inputUrl,
-      shortUrl: ''
-    });
-    setInputUrl(result);
+    if (inputUrl) {
+      const result = await linkMutation.mutateAsync({
+        originalUrl: inputUrl,
+        shortUrl: ''
+      });
+      setShortUrl(result.shortUrl);
+    }
   };
+
+  const redirectOriginalUrl = () => {
+    if (shortUrl) {
+      navigate(`${shortUrl}`);
+    }
+  };
+
+useEffect(() => {
+  navigate('/');
+}, [navigate]);
 
   return (
     <Grid container marginTop={10} padding={1}>
       <Grid item xs={12}>
         <Typography variant="h3" component="div" sx={{flexGrow: 1}}>
-          Shroten your links!
+          Shorten your links!
         </Typography>
       </Grid>
       <Grid item xs={12} marginTop={4}>
@@ -46,18 +62,24 @@ const InputForm = () => {
             label="Enter URL here"/>
           <Box marginTop={1}>
             <Button
-              startIcon={<ShortTextIcon />}
+              startIcon={<ShortTextIcon/>}
               fullWidth
               variant="contained"
               onClick={handleClick}
               disabled={loading}>
-              {loading ? <CircularProgress /> : 'Shorten!'}
+              {loading ? <CircularProgress/> : 'Shorten!'}
             </Button>
           </Box>
         </form>
-        {inputUrl && (
+        {shortUrl && (
           <Typography variant="body1" marginTop={2}>
-            Shortened URL: <a href={inputUrl}>{inputUrl}</a>
+            Shortened URL:
+            <Link
+              href={`http://localhost:8000/links/${shortUrl}`}
+              onClick={redirectOriginalUrl}
+            >
+              http://localhost:8000/links/{shortUrl}
+            </Link>
           </Typography>
         )}
       </Grid>
