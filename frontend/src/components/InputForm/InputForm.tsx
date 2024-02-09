@@ -2,7 +2,7 @@ import {Box, Button, CircularProgress, Grid, Link, TextField, Typography} from '
 import ShortTextIcon from '@mui/icons-material/ShortText';
 import {useMutation} from '@tanstack/react-query';
 import axiosApi from '../../axiosApi.ts';
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import {ShorURL} from '../../types';
 import {useNavigate} from 'react-router';
 
@@ -25,6 +25,7 @@ const InputForm = () => {
     }
   });
 
+
   const handleClick = async () => {
     if (inputUrl) {
       const result = await linkMutation.mutateAsync({
@@ -32,18 +33,18 @@ const InputForm = () => {
         shortUrl: ''
       });
       setShortUrl(result.shortUrl);
+    } else {
+      alert('Please enter URL\nThis field is not to be an empty!');
     }
   };
 
   const redirectOriginalUrl = () => {
     if (shortUrl) {
       navigate(`${shortUrl}`);
+    } else {
+      console.error(`Short URL is null`);
     }
   };
-
-useEffect(() => {
-  navigate('/');
-}, [navigate]);
 
   return (
     <Grid container marginTop={10} padding={1}>
@@ -76,6 +77,7 @@ useEffect(() => {
             Shortened URL:
             <Link
               href={`http://localhost:8000/links/${shortUrl}`}
+              target="_blank"
               onClick={redirectOriginalUrl}
             >
               http://localhost:8000/links/{shortUrl}

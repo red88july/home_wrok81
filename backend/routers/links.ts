@@ -25,7 +25,7 @@ linksRouter.post('/', async (req, res, next) => {
         const newUrlLink = new LinkModel(postURL);
         await newUrlLink.save();
 
-        res.json(newUrlLink);
+        res.send(newUrlLink);
     } catch (e) {
         next(e);
     }
