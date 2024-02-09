@@ -1,10 +1,11 @@
-import {Box, Button, CircularProgress, Grid, Link, TextField, Typography} from '@mui/material';
+import {Box, Button, CircularProgress, Grid, TextField, Typography} from '@mui/material';
 import ShortTextIcon from '@mui/icons-material/ShortText';
 import {useMutation} from '@tanstack/react-query';
 import axiosApi from '../../axiosApi.ts';
 import {useState} from 'react';
 import {ShorURL} from '../../types';
 import {useNavigate} from 'react-router';
+import LinkItem from '../LinkItem/LinkItem';
 
 const InputForm = () => {
   const [inputUrl, setInputUrl] = useState<string>('');
@@ -41,8 +42,6 @@ const InputForm = () => {
   const redirectOriginalUrl = () => {
     if (shortUrl) {
       navigate(`${shortUrl}`);
-    } else {
-      console.error(`Short URL is null`);
     }
   };
 
@@ -73,16 +72,9 @@ const InputForm = () => {
           </Box>
         </form>
         {shortUrl && (
-          <Typography variant="body1" marginTop={2}>
-            Shortened URL:
-            <Link
-              href={`http://localhost:8000/links/${shortUrl}`}
-              target="_blank"
-              onClick={redirectOriginalUrl}
-            >
-              http://localhost:8000/links/{shortUrl}
-            </Link>
-          </Typography>
+          <LinkItem
+            onClick={redirectOriginalUrl}
+            shortUrl={shortUrl}/>
         )}
       </Grid>
     </Grid>
